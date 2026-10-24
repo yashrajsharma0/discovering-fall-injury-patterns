@@ -1,0 +1,5 @@
+Year,File,Status,Data_Rows,Age_65_Plus_Rows,Fall_Keyword_Candidates,Fall_Candidate_Share_of_Age65Plus_pct,Under2_Month_Codes_Excluded,Age_Codes_Above_115_Excluded,Age_Missing_Or_Invalid,Missing_Narratives_Age65Plus,Invalid_Dates_Age65Plus,Duplicate_Case_Numbers_Age65Plus,First_Treatment_Date,Last_Treatment_Date,Seconds,Missing_Required_Columns
+2019,neiss2019.xlsx,Processed,358715,65977,50672,76.8,21505,0,0,0,0,0,2019-01-01,2019-12-31,26.4,
+2020,neiss2020r.xlsx,Processed,309370,60343,47502,78.72,20753,0,0,0,0,0,2020-01-01,2020-12-31,23.1,
+2021,neiss2021r.xlsx,Processed,340442,66769,52440,78.54,21366,0,0,0,0,0,2021-01-01,2021-12-31,25.9,
+2022,neiss2022.xlsx,Processed,323343,64156,51013,79.51,20176,0,0,0,0,0,2022-01-01,2022-12-31,24.2,

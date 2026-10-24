@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.py[cod]
+.DS_Store
+.env
+# Do not commit full datasets or private records
+data/*.csv
+!data/sample_fall_candidates.csv
+results/prototype_assignments.csv
+results/prototype_metrics.json
+
+data/sample_fall_candidates.csv
