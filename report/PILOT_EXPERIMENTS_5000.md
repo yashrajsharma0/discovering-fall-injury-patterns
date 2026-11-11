@@ -4,15 +4,7 @@
 
 ## Sample
 
-| Source year | Records |
-|---|---:|
-| 2019 | 1,257 |
-| 2020 | 1,178 |
-| 2021 | 1,300 |
-| 2022 | 1,265 |
-| **Total** | **5,000** |
-
-The sample was drawn from the 2019–2022 keyword-screened candidate CSV using a fixed random state and year-proportional allocation. The original candidate file contains 201,627 records; those are not confirmed falls.
+The four experiments used the same 5,000-record CSV sample. The original candidate file contains 201,627 records; those are not confirmed falls. The sampling procedure should be confirmed from the local sample-generation script before final submission.
 
 ## Results observed in local runs
 
@@ -37,7 +29,7 @@ The values above were captured from the local experiment outputs. `silhouette_sc
 
 ## Human-review pilot completed
 
-Twenty records were manually classified by one reviewer: 19 `yes`, 1 `no`. The reviewed records came from a small sequential group in 2019, not a representative stratified sample. These counts are useful as a workflow pilot only; they must not be presented as a reliable estimate of precision for all 201,627 candidates.
+Three records have been manually reviewed so far by one reviewer, and all three explicitly describe falls. This is only a tiny workflow pilot; it cannot estimate precision or validate the full candidate set.
 
 ## Required caveats
 
