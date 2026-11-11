@@ -31,8 +31,8 @@ Full datasets are local and excluded from Git. Do not commit raw/full CSVs or pr
 - NEISS 2019–2022 preparation and source audit.
 - 201,627 keyword-screened candidates across 2019–2022.
 - Keyword-frequency baseline.
-- Twenty-record manual pilot review: 19 marked as falls and 1 as not a fall. This was a small sequential 2019 pilot, not a representative estimate of candidate precision.
-- A reproducible 5,000-record sample with year mix: 2019 = 1,257; 2020 = 1,178; 2021 = 1,300; 2022 = 1,265.
+- Three-record manual review pilot completed so far (three explicit falls). This is far too small to estimate candidate precision.
+- A 5,000-record experiment sample used consistently across the four pilot model runs.
 - Four 6-cluster TF-IDF + KMeans pilot runs on the same 5,000 records. The measured silhouette scores were all very low; none is established as a final model.
 
 See [pilot experiment results](report/PILOT_EXPERIMENTS_5000.md) and [fast-track checklist](report/FAST_TRACK_CHECKLIST.md).
@@ -90,7 +90,7 @@ These scores are close to zero and indicate weakly separated clusters. V2 has th
 ## Reproducibility and interpretation
 
 - Fixed random state: 42.
-- Pilot sample: 5,000 records, sampled with a year-proportional allocation from the keyword candidate file.
+- Pilot sample: 5,000 records. The exact sampling procedure should be recorded from the local sample-generation script before final submission.
 - Clustering: TF-IDF word unigrams/bigrams + KMeans, six clusters.
 - Silhouette is sampled by the prototype; report it as such.
 - ARI stability measures agreement across overlapping subsamples, not semantic correctness.
