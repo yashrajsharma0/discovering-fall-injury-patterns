@@ -8,5 +8,6 @@ data/*.csv
 !data/sample_fall_candidates.csv
 results/prototype_assignments.csv
 results/prototype_metrics.json
+results/human_coherence_ratings.csv
 
 data/sample_fall_candidates.csv

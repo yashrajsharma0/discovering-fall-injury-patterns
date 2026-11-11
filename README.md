@@ -1,84 +1,112 @@
 # Discovering Fall Injury Patterns in Medical Narratives
 
-**Status: working prototype; dataset substitution documented; validation and model evaluation still in progress.**
+**Status:** reproducible exploratory pipeline and local Explorer dashboard. Dataset substitution and candidate-label limitations are documented below.
 
 ## Official project allocation
-**Topic:** Discovering Fall Injury Patterns in Medical Narratives
 
-**Problem statement (from allocation):** Older adult falls are recorded as free-text narratives that nobody reads in aggregate, so prevention is designed on assumption.
+**Topic:** Discovering Fall Injury Patterns in Medical Narratives
 
 **Objectives (copied from allocation):**
 1. Build a discovery system that clusters narratives into recurring circumstance patterns and quantifies each.
 2. Produce a clustering of narratives with named themes and their share of incidents.
 3. Report silhouette, cluster stability, human-rated theme coherence.
 
-**Mandatory baseline and deliverable (from allocation):** Baseline: keyword frequency counts. Deliver Explorer dashboard with theme drill-down.
-
-**Assigned source:** DrivenData — *Unsupervised Wisdom: Explore Medical Narratives on Older Adult Falls*. Organizer: DrivenData (challenge sponsor stated on the official page — VR). Dataset access: competition dataset (platform account / rules acceptance).
-
-Official link: https://www.drivendata.org/competitions/217/cdc-fall-narratives/
-
-## Research goal
-Discover recurring circumstance themes in older-adult fall narratives, quantify each theme's share, assess silhouette and cluster stability, and arrange a human-rated coherence review. Compare against the allocated keyword-frequency baseline and provide an Explorer dashboard with theme drill-down.
+**Required baseline and deliverable:** keyword-frequency counts and an Explorer dashboard with theme drill-down.
 
 ## Important dataset caveat
-The team has selected a prepared subset derived from CPSC NEISS annual public data (2019–2022) as its **working dataset**, because the allocated DrivenData event has ended. This is a documented substitution, not the same dataset. NEISS focuses on consumer-product-related ED injuries. The keyword-filtered records are *candidates*, not confirmed fall cases. Obtain instructor written approval for the substitution and check the source terms before redistributing any data. Official portal: https://www.cpsc.gov/Research--Statistics/NEISS-Injury-Data
 
-The repository includes only a small sample and a 160-record manual-review template. Do not commit the full data files. The full prepared CSV should be stored in an approved data host and downloaded separately.
+The allocated source was the DrivenData competition *Unsupervised Wisdom: Explore Medical Narratives on Older Adult Falls*. The working data used in the current experiments is a prepared subset of CPSC NEISS annual public-use data (2019–2022), because the allocated event/data access was unavailable. This is a dataset substitution, not the original competition data. **Obtain written instructor approval before submission.**
 
-## Project structure
-- `data/`: small example sample and dataset notes
-- `notebooks/`: EDA and experiments (to be added)
-- `src/`: cleaning, keyword baseline, clustering model, EDA and stability evaluation
-- `app/`: Streamlit Explorer prototype
-- `results/`: source validation summary and generated experiment outputs
-- `report/`: final report PDF (to be added after real evaluation)
-- `presentation/`: final slides (to be added)
+NEISS covers consumer-product-related emergency-department injury visits; it is not a census of all older-adult falls. The 201,627 records are **keyword-screened candidates, not confirmed falls**. The keyword filter can include false positives and miss falls phrased differently. Never describe the candidate count or cluster shares as prevalence among all older adults.
+
+Official sources:
+- DrivenData allocation: https://www.drivendata.org/competitions/217/cdc-fall-narratives/
+- CPSC NEISS data portal: https://www.cpsc.gov/Research--Statistics/NEISS-Injury-Data
+
+Full datasets are local and excluded from Git. Do not commit raw/full CSVs or private records.
+
+## What's already done
+
+- Python project and virtual environment setup.
+- NEISS 2019–2022 preparation and source audit.
+- 201,627 keyword-screened candidates across 2019–2022.
+- Keyword-frequency baseline.
+- Three-record manual review pilot completed so far (three explicit falls). This is far too small to estimate candidate precision.
+- A 5,000-record experiment sample used consistently across the four pilot model runs.
+- Four 6-cluster TF-IDF + KMeans pilot runs on the same 5,000 records. The measured silhouette scores were all very low; none is established as a final model.
+
+See [pilot experiment results](report/PILOT_EXPERIMENTS_5000.md) and [fast-track checklist](report/FAST_TRACK_CHECKLIST.md).
 
 ## Setup
-Use Python 3.10 or 3.11 in a virtual environment.
 
-```bash
+Use Python 3.10 or 3.11:
+
+```powershell
 python -m venv .venv
-# Windows PowerShell: .venv\\Scripts\\Activate.ps1
-# macOS/Linux: source .venv/bin/activate
+.\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
 ```
 
-## Run a small smoke-test experiment
-From the repository root:
+## Fastest remaining workflow
 
-```bash
-python src/run_experiment.py --input data/sample_fall_candidates.csv --clusters 6
-streamlit run app/streamlit_app.py
+1. Bring in the latest project branch (instructions are in the PR).
+2. Run the V2-versus-V4 stability pilot:
+
+```powershell
+python src\compare_stability.py --repeats 3
 ```
 
-The sample is for testing the pipeline only. Metrics generated on it are not final project results. For the full experiment, download the approved dataset and pass its local path to `--input`.
+The script compares mean pairwise adjusted Rand index (ARI) across overlapping random subsamples. It reads the existing 5,000-record assignments and writes `results/stability_comparison_5000.json`. Three repeats are a quick pilot, not a high-precision stability estimate.
 
-## Data validation and human coherence review
+3. Launch the Explorer:
 
-Open `data/manual_validation_template.csv` and code each reviewed narrative using `is_actual_fall` (`yes`, `no`, `uncertain`), confidence (1–3), and a short circumstance theme. Do not infer a fall solely from a keyword match. Preserve the review decisions and summarize reviewer agreement where multiple reviewers are available. This human review is necessary before making claims about candidate precision or human-rated theme coherence.
-
-Run EDA on the full local candidate CSV with:
-
-```bash
-python src/eda.py --input PATH_TO/neiss_2019_2022_fall_candidates.csv --out results/eda
+```powershell
+streamlit run app\streamlit_app.py
 ```
 
-The stability helper is available in `src/stability.py`; report its settings and ARI results only after actually running it on the selected data.
+The app discovers local result files for the original control, V2, V3 and V4. Select a cluster, inspect examples, filter by year/search text, and download filtered records.
 
-## Reproducibility
-- Fixed random seed: 42
-- Clustering prototype: TF-IDF word uni/bi-grams + KMeans
-- Transparent baseline: rule-based keyword grouping
-- Generated assignments and summary metrics are saved under `results/`
-- Do not report numbers until data validation, manual review, objective alignment and full-run testing are complete.
+4. In the dashboard's **Human-rated theme coherence** section, inspect three reproducibly sampled examples per cluster, give each cluster a short working name, and rate consistency from 1 (not coherent) to 5 (very coherent). The app saves ratings to `results/human_coherence_ratings.csv`. This is a single-reviewer pilot; do not claim inter-rater reliability.
 
-## Required before submission
-1. Obtain and retain written instructor approval for the NEISS dataset substitution.
-2. Validate a stratified sample of candidate narratives and document false positives/false negatives; never call keyword candidates confirmed falls without evidence.
-3. Run EDA and experiments on the approved data. Include silhouette, cluster stability, human-rated theme coherence, the required keyword-frequency baseline, theme shares, and Explorer dashboard drill-down.
-4. Complete the report using the supplied CA-1 template and slides/demo. Report only reproducible results generated by this implementation.
+## Existing scripts
+
+- `src/eda.py`: exploratory data summaries and figures.
+- `src/keyword_frequency_baseline.py`: required keyword-frequency baseline.
+- `src/run_experiment.py`: TF-IDF + KMeans assignments and sampled silhouette.
+- `src/stability.py`: subsample stability helper.
+- `src/compare_stability.py`: quick V2/V4 stability comparison.
+
+## Pilot model comparison (same 5,000 narratives, 6 clusters)
+
+| Model | Sampled silhouette | Largest cluster | Largest-cluster share |
+|---|---:|---:|---:|
+| Original control | 0.00680 | 1,604 | 32.08% |
+| V2 | 0.01187 | 3,071 | 61.42% |
+| V3 | 0.00764 | 2,433 | 48.66% |
+| V4 | 0.00775 | 3,127 | 62.54% |
+
+These scores are close to zero and indicate weakly separated clusters. V2 has the highest score in this pilot, but its largest cluster contains 61.42% of the sample. This is not enough evidence to declare V2 the winner. Theme names must be based on inspecting actual narratives and human ratings.
+
+## Reproducibility and interpretation
+
+- Fixed random state: 42.
+- Pilot sample: 5,000 records. The exact sampling procedure should be recorded from the local sample-generation script before final submission.
+- Clustering: TF-IDF word unigrams/bigrams + KMeans, six clusters.
+- Silhouette is sampled by the prototype; report it as such.
+- ARI stability measures agreement across overlapping subsamples, not semantic correctness.
+- Human coherence ratings in this repository are single-reviewer pilot judgments, not inter-rater reliability.
+- Keyword groups overlap; their shares must not be summed to 100%.
+- Keep the exploratory warning wherever candidate records or candidate shares are displayed.
+
+## Still required before final submission
+
+1. Written instructor approval for the NEISS substitution.
+2. A broader and appropriately sampled human validation review, or explicit reporting that validation remains a small pilot.
+3. Completed stability evaluation and human coherence ratings, with settings and limitations.
+4. Defensible named themes, theme counts/shares, and full-data rerun only after selecting a model.
+5. Final report and presentation using the instructor's required template.
+6. Student review of all code, results and AI-tool disclosure according to course rules.
 
 ## AI-tool disclosure
-This project has been developed with assistance from ChatGPT for planning, code scaffolding, debugging support and documentation. The team must review, understand, test and accurately disclose the assistance actually used, as required by the course guidelines.
+
+ChatGPT assisted with planning, code scaffolding, debugging support and documentation. The team must review, understand, test and disclose the assistance actually used, following course guidelines.

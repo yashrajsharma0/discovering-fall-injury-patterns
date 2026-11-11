@@ -1,0 +1,5 @@
+model,rows,clusters,silhouette_sampled,largest_cluster_n,largest_cluster_share_pct,cluster_sizes,interpretation
+Original control,5000,6,0.0068009442,1604,32.08,"1458;469;244;844;381;1604","Weak separation; top terms dominated by injury and diagnosis wording"
+V2,5000,6,0.0118713562,3071,61.42,"527;614;211;3071;251;326","Highest pilot silhouette, but one broad cluster dominates"
+V3,5000,6,0.0076399185,2433,48.66,"2433;379;626;778;485;299","Weak separation; body-part and injury context remain prominent"
+V4,5000,6,0.0077540717,3127,62.54,"171;249;3127;855;208;390","Preserves circumstance and body-part context better in sampled examples, but one broad cluster dominates"
