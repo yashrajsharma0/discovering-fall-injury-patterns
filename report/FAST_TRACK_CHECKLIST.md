@@ -7,7 +7,7 @@ This is the shortest responsible route to a complete, honestly reported project.
 - [x] Project repository and Python environment.
 - [x] NEISS 2019–2022 source audit and candidate CSV preparation.
 - [x] Keyword-frequency baseline.
-- [x] 20-record single-reviewer manual pilot (19 yes, 1 no); documented as non-representative.
+- [x] Three-record single-reviewer manual pilot; all three explicitly describe falls. Too small for precision estimates.
 - [x] Reproducible 5,000-record experiment sample.
 - [x] Original, V2, V3 and V4 six-cluster pilot runs.
 - [x] Pilot model comparison documented.
