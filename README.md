@@ -1,10 +1,8 @@
 # Discovering Fall Injury Patterns in Medical Narratives
 
-**Status:** reproducible exploratory pipeline and local Explorer dashboard. Dataset substitution and candidate-label limitations are documented below.
+**Status:** exploratory research prototype with a local Explorer dashboard. The assigned DrivenData source was substituted with prepared CPSC NEISS 2019–2022 data; written instructor approval is still required.
 
 ## Official project allocation
-
-**Topic:** Discovering Fall Injury Patterns in Medical Narratives
 
 **Objectives (copied from allocation):**
 1. Build a discovery system that clusters narratives into recurring circumstance patterns and quantifies each.
@@ -25,15 +23,17 @@ Official sources:
 
 Full datasets are local and excluded from Git. Do not commit raw/full CSVs or private records.
 
-## What's already done
+## What's completed
 
 - Python project and virtual environment setup.
 - NEISS 2019–2022 preparation and source audit.
 - 201,627 keyword-screened candidates across 2019–2022.
 - Keyword-frequency baseline.
-- Three-record manual review pilot completed so far (three explicit falls). This is far too small to estimate candidate precision.
-- A 5,000-record experiment sample used consistently across the four pilot model runs.
-- Four 6-cluster TF-IDF + KMeans pilot runs on the same 5,000 records. The measured silhouette scores were all very low; none is established as a final model.
+- 20-record manual fall-label pilot: 19 labelled "yes" and 1 labelled "no" by one reviewer. This small sequential pilot is not a representative estimate of candidate precision.
+- Four six-cluster TF-IDF + KMeans pilot runs on the same 5,000-record experiment sample.
+- V2/V4 subsample stability pilot (three pairwise comparisons per model).
+- V4 human theme-coherence pilot: six clusters, three sampled examples per cluster, one reviewer.
+- Local Streamlit Explorer dashboard with filters, cluster drill-down and downloadable ratings.
 
 See [pilot experiment results](report/PILOT_EXPERIMENTS_5000.md) and [fast-track checklist](report/FAST_TRACK_CHECKLIST.md).
 
@@ -47,34 +47,13 @@ python -m venv .venv
 python -m pip install -r requirements.txt
 ```
 
-## Fastest remaining workflow
-
-1. Bring in the latest project branch (instructions are in the PR).
-2. Run the V2-versus-V4 stability pilot:
-
-```powershell
-python src\compare_stability.py --repeats 3
-```
-
-The script compares mean pairwise adjusted Rand index (ARI) across overlapping random subsamples. It reads the existing 5,000-record assignments and writes `results/stability_comparison_5000.json`. Three repeats are a quick pilot, not a high-precision stability estimate.
-
-3. Launch the Explorer:
+## Run the Explorer
 
 ```powershell
 streamlit run app\streamlit_app.py
 ```
 
-The app discovers local result files for the original control, V2, V3 and V4. Select a cluster, inspect examples, filter by year/search text, and download filtered records.
-
-4. In the dashboard's **Human-rated theme coherence** section, inspect three reproducibly sampled examples per cluster, give each cluster a short working name, and rate consistency from 1 (not coherent) to 5 (very coherent). The app saves ratings to `results/human_coherence_ratings.csv`. This is a single-reviewer pilot; do not claim inter-rater reliability.
-
-## Existing scripts
-
-- `src/eda.py`: exploratory data summaries and figures.
-- `src/keyword_frequency_baseline.py`: required keyword-frequency baseline.
-- `src/run_experiment.py`: TF-IDF + KMeans assignments and sampled silhouette.
-- `src/stability.py`: subsample stability helper.
-- `src/compare_stability.py`: quick V2/V4 stability comparison.
+Select the original control, V2, V3 or V4 local assignments. The app supports cluster and year filtering, narrative search, record inspection, filtered-record export, and one-reviewer coherence ratings saved locally to `results/human_coherence_ratings.csv`.
 
 ## Pilot model comparison (same 5,000 narratives, 6 clusters)
 
@@ -85,27 +64,74 @@ The app discovers local result files for the original control, V2, V3 and V4. Se
 | V3 | 0.00764 | 2,433 | 48.66% |
 | V4 | 0.00775 | 3,127 | 62.54% |
 
-These scores are close to zero and indicate weakly separated clusters. V2 has the highest score in this pilot, but its largest cluster contains 61.42% of the sample. This is not enough evidence to declare V2 the winner. Theme names must be based on inspecting actual narratives and human ratings.
+All four silhouette scores are close to zero, indicating weak separation in the TF-IDF feature space. V2 has the highest pilot silhouette but a highly dominant cluster. V4 has the best measured V2/V4 subsample stability and has been human-rated, but its dominant cluster is also very large. **Do not claim a validated winning model.**
+
+## Stability pilot (V2 vs V4)
+
+The local command `python src\compare_stability.py --repeats 3 --output results\stability_comparison_5000_fasttrack.json` completed successfully.
+
+| Model | Mean pairwise ARI | Standard deviation | Pairwise comparisons |
+|---|---:|---:|---:|
+| V2 | 0.5010 | 0.1192 | 3 |
+| V4 | 0.6502 | 0.1430 | 3 |
+
+V4 showed higher agreement across these repeated subsample comparisons. This is a small exploratory stability pilot, not proof of semantic correctness or a precise population estimate.
+
+## V4 human-rated theme coherence pilot
+
+One reviewer (R1) inspected three reproducibly sampled narratives in each of the six V4 clusters and saved one rating per cluster in `results/human_coherence_ratings.csv`.
+
+| Cluster | Provisional working theme | Coherence rating |
+|---|---|---:|
+| 0 | Falls to floor – mixed mechanisms | 2/5 |
+| 1 | Loss of balance while walking | 4/5 |
+| 2 | Mixed fall circumstances (general) | 2/5 |
+| 3 | Falls involving impact with nearby objects | 3/5 |
+| 4 | Falls in nursing-home settings | 4/5 |
+| 5 | Falls from bed | 5/5 |
+| **Mean** | **Equal-weight mean across six clusters** | **3.33/5** |
+
+This represents 18 example-level judgments by one reviewer, not 18 independent raters and not inter-rater reliability. The ratings are a pilot qualitative assessment; cluster 2 is especially broad and weakly coherent.
+
+V4 cluster shares within the 5,000 loaded candidate records:
+
+| Cluster | Records | Share of loaded candidates |
+|---|---:|---:|
+| 0 | 171 | 3.42% |
+| 1 | 249 | 4.98% |
+| 2 | 3,127 | 62.54% |
+| 3 | 855 | 17.10% |
+| 4 | 208 | 4.16% |
+| 5 | 390 | 7.80% |
+
+These percentages are shares of this 5,000-record keyword-screened sample only. They are not all-incident shares or population prevalence.
+
+## Existing scripts
+
+- `src/eda.py`: exploratory data summaries and figures.
+- `src/keyword_frequency_baseline.py`: required keyword-frequency baseline.
+- `src/run_experiment.py`: TF-IDF + KMeans assignments and sampled silhouette.
+- `src/stability.py`: subsample stability helper.
+- `src/compare_stability.py`: quick V2/V4 stability comparison.
 
 ## Reproducibility and interpretation
 
 - Fixed random state: 42.
-- Pilot sample: 5,000 records. The exact sampling procedure should be recorded from the local sample-generation script before final submission.
+- Pilot sample: 5,000 records. Confirm and describe the exact sampling procedure from the local sample-generation script before final submission.
 - Clustering: TF-IDF word unigrams/bigrams + KMeans, six clusters.
 - Silhouette is sampled by the prototype; report it as such.
-- ARI stability measures agreement across overlapping subsamples, not semantic correctness.
-- Human coherence ratings in this repository are single-reviewer pilot judgments, not inter-rater reliability.
+- ARI stability measures agreement across repeated subsamples, not semantic correctness.
+- Human coherence ratings are single-reviewer pilot judgments, not inter-rater reliability.
 - Keyword groups overlap; their shares must not be summed to 100%.
 - Keep the exploratory warning wherever candidate records or candidate shares are displayed.
 
 ## Still required before final submission
 
 1. Written instructor approval for the NEISS substitution.
-2. A broader and appropriately sampled human validation review, or explicit reporting that validation remains a small pilot.
-3. Completed stability evaluation and human coherence ratings, with settings and limitations.
-4. Defensible named themes, theme counts/shares, and full-data rerun only after selecting a model.
-5. Final report and presentation using the instructor's required template.
-6. Student review of all code, results and AI-tool disclosure according to course rules.
+2. Decide, with the instructor's scope in mind, whether to run the selected exploratory pipeline on all 201,627 candidates. Do not call that a confirmed-fall dataset.
+3. If a full-candidate run is completed, report its exact cluster counts/shares and sampled silhouette; do not reuse the 5,000-record pilot metrics as full-data results.
+4. Final report and presentation using the instructor's required template.
+5. Student review of all code, results and AI-tool disclosure according to course rules.
 
 ## AI-tool disclosure
 
