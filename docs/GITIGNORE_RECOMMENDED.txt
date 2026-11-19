@@ -1,0 +1,15 @@
+# Append these patterns to the project's .gitignore before staging changes.
+# Keep source data, case-level narratives, adjudication keys and local assignments off public GitHub.
+
+data/neiss_*.csv
+data/experiment_sample_*.csv
+data/fall_screen_*.csv
+data/manual_validation_*.csv
+review_materials/*.csv
+results/**/benchmark_sample_*.csv
+results/**/assignments_*.csv
+results/**/full_candidate_cluster_index.csv
+results/**/human*.csv
+results/**/human*.json
+results/**/provisional_theme_hypotheses_AI_DRAFT.csv
+results/**/fall_screen*.csv

@@ -11,3 +11,12 @@ results/prototype_metrics.json
 results/human_coherence_ratings.csv
 
 data/sample_fall_candidates.csv
+# Keep individual experiment records and narratives private
+results/**/prototype_assignments.csv
+results/**/prototype_metrics.json
+
+# Private human-review files - never publish
+/private_review/
+/review_materials/*.csv
+/results/
+/.gitignore.backup
